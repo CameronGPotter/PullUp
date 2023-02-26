@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Input, NativeBaseProvider, Button, Icon, Box, Image, AspectRatio } from 'native-base';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -7,11 +7,21 @@ import { useNavigation } from '@react-navigation/native';
 import { alignContent, flex, flexDirection, width } from 'styled-system';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
+import { signIn } from '../auth/auth_signin_password';
 
 type loginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 function Login() {
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
     const navigation = useNavigation<loginScreenProp>();
+
+    function onLogin() {
+        const user = signIn(userName, password);
+        // console.log(user);
+        navigation.navigate("Home");
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.Middle}>
@@ -28,6 +38,9 @@ function Login() {
 
                 <View style={styles.emailInput}>
                     <Input
+                        value={userName}
+                        onChangeText={(userName) => setUserName(userName)}
+                        placeholder={'Username or Email'}
                         InputLeftElement={
                             <Icon
                                 as={<FontAwesome5 name="user-secret" />}
@@ -42,7 +55,6 @@ function Login() {
                             />
                         }
                         variant="outline"
-                        placeholder="Username or Email"
                         _light={{
                             placeholderTextColor: "blueGray.400",
                         }}
@@ -59,6 +71,9 @@ function Login() {
 
                 <View style={styles.emailInput}>
                     <Input
+                        value={password}
+                        onChangeText={(password) => setPassword(password)}
+                        placeholder={'Password'}
                         InputLeftElement={
                             <Icon
                                 as={<FontAwesome5 name="key" />}
@@ -74,7 +89,6 @@ function Login() {
                         }
                         variant="outline"
                         secureTextEntry={true}
-                        placeholder="Password"
                         _light={{
                             placeholderTextColor: "blueGray.400",
                         }}
@@ -87,7 +101,7 @@ function Login() {
 
             {/* Button */}
             <View style={styles.buttonStyle}>
-                <Button style={styles.buttonDesign}>
+                <Button style={styles.buttonDesign} onPress={() => onLogin()}>
                     LOGIN
                 </Button>
             </View>
