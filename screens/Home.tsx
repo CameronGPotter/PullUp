@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import { Input, NativeBaseProvider, Button, Icon, Box, Image, AspectRatio } from 'native-base';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -7,6 +7,9 @@ import { useNavigation } from '@react-navigation/native';
 import { alignContent, flex, flexDirection, width } from 'styled-system';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
+import * as Location from 'expo-location'
+import { collection, addDoc, getDocs } from "firebase/firestore"; 
+import { db } from '../firebaseConfig'
 
 import { WebView } from 'react-native-webview';
 
@@ -18,12 +21,64 @@ const position = [51.505, -0.09];
 
 function Home() {
     const navigation = useNavigation<loginScreenProp>();
+    const [errorMessages, setErrorMessages] = useState<string | null>(null)
 
     const markers = [
-        { lat: 51.505, lng: -0.09, name: 'Marker 1' },
-        { lat: 51.51, lng: -0.1, name: 'Marker 2' },
-        { lat: 51.495, lng: -0.1, name: 'Marker 3' },
+        { lat: 33.7729036, lng: -84.3963336, name: 'Chris' },
+        { lat: 33.7747054, lng: -84.3962344, name: 'Cameron' },
+        { lat: 33.7754311, lng: -84.4034438, name: 'Chenyu' },
     ];
+
+    useEffect(() => {
+        load()
+    })
+
+    async function load() {
+        
+        setErrorMessages(null)
+        try {
+            let { status } = await Location.requestForegroundPermissionsAsync()
+
+            if (status !== 'granted') {
+                setErrorMessages('Location permission not granted')
+                return
+            }
+
+        } catch (error: any) {
+            setErrorMessages(error.message)
+        }
+    }
+
+    async function storeData(latitude:any, longitude:any, email:any) {
+        try {
+            const docRef = await addDoc(collection(db, "locations"), {
+              lat: latitude,
+              long: longitude,
+              user: email
+            });
+            console.log("Document written with ID: ", docRef.id);
+          } catch (e) {
+            console.log("Error adding document: ", e);
+            // console.error("Error adding document: ", e);
+          }
+    }
+
+    async function loadData() {
+        const querySnapshot = await getDocs(collection(db, "locations"));
+        querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        });
+    }
+
+    console.log("HERE");
+
+    storeData(33.7747054, -84.3962344, 'camerongpotter@gmail.com')
+
+    loadData()
+
+    
+
 
     const mapHtml = `
     <html>
@@ -50,9 +105,6 @@ function Home() {
           </body>
         </html>
       `;
-
-      console.log(mapHtml);
-
     return (
         // <View style={styles.container}>
         //     <LeafletView
@@ -74,7 +126,7 @@ function Home() {
               />
               <TextInput style={styles.inputContainer} placeholder="Find your friends" />
               <View style={styles.button}>
-                <PurpleButton label="Share my location" />
+                <PurpleButton label="Share my location" onPress={() => alert("Button has been pressed")}/>
               </View>
         </View>
     )

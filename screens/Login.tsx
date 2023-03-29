@@ -18,7 +18,6 @@ function Login() {
 
     function onLogin() {
         const user = signIn(userName, password);
-        // console.log(user);
         navigation.navigate("Home");
     }
 
