@@ -17,9 +17,9 @@ function Login() {
     const navigation = useNavigation<loginScreenProp>();
 
     function onLogin() {
-        const user = signIn(userName, password);
-        // console.log(user);
-        navigation.navigate("Home");
+        const user = signIn(userName, password)
+            .then(() => navigation.navigate("Home"))
+            .catch(() => alert("Login Not Found"));
     }
 
     return (
