@@ -9,7 +9,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
 import * as Location from 'expo-location'
 import { collection, addDoc, getDocs, deleteDoc } from "firebase/firestore"; 
-import { db } from '../firebaseConfig'
+import { app, auth, db } from '../firebaseConfig'
 
 import { WebView } from 'react-native-webview';
 
@@ -17,191 +17,219 @@ import PurpleButton from '../components/PurpleButton'
 
 type loginScreenProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
-const position = [51.505, -0.09];
+let position = [33.7747054, -84.3962344];
 
 function Home() {
+    const { currentUser } = auth; //we are getting the user from Firebase
+    const markers = [
+        { lat: 33.7729036, long: -84.3963336, user: 'Chris' },
+        // { lat: 33.7747054, long: -84.3962344, user: 'Cameron' },;
+        { lat: 33.7754311, long: -84.4034438, user: 'Chenyu' },
+    ];
     const navigation = useNavigation<loginScreenProp>();
     const [errorMessages, setErrorMessages] = useState<string | null>(null)
-
-    const markers = [
-        { lat: 33.7729036, lng: -84.3963336, name: 'Chris' },
-        { lat: 33.7747054, lng: -84.3962344, name: 'Cameron' },
-        { lat: 33.7754311, lng: -84.4034438, name: 'Chenyu' },
-    ];
-
+    const [locations, setLocations] = useState<any[]>([]);
+    
+    
+    
     useEffect(() => {
-        load()
-    })
 
+        load();
+        storeData(33.7754311, -84.3962344, currentUser?.email);
+        loadData();
+    }, [])
+    
     async function load() {
         
         setErrorMessages(null)
         try {
             let { status } = await Location.requestForegroundPermissionsAsync()
-
+            
             if (status !== 'granted') {
                 setErrorMessages('Location permission not granted')
                 return
             }
-
+            
+            const location = await Location.getCurrentPositionAsync({})
+            
+            const { latitude, longitude } = location.coords
+            
+            position[0] = latitude
+            position[1] = longitude
+            
         } catch (error: any) {
             setErrorMessages(error.message)
         }
     }
-
+    
     async function storeData(latitude:any, longitude:any, email:any) {
         try {
             const docRef = await addDoc(collection(db, "locations"), {
-              lat: latitude,
-              long: longitude,
-              user: email
+                lat: latitude,
+                long: longitude,
+                user: email
             });
             console.log("Document written with ID: ", docRef.id);
-          } catch (e) {
+        } catch (e) {
             console.log("Error adding document: ", e);
             // console.error("Error adding document: ", e);
-          }
+        }
+    }
+
+    async function getLocation() {
+        let lArray = locations
+        let name = 'You'
+        if (position[0] == 33.7747054 && position[1] == -84.3962344) {
+            name = 'Default'
+        }
+        lArray.push({lat: position[0], long: position[1], user: name});
+        setLocations(lArray)
     }
     
-    const [locations, setLocations] = useState([]);
-
     async function loadData() {
-      const querySnapshot = await getDocs(collection(db, "locations"));
-      let lArray = [];
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        lArray.push(doc.data())
-        console.log(doc.id, " => ", doc.data());
-      });
-
-      setLocations(lArray)
-      console.log("HERE");
-
+        let lArray:any[] = [];
+        const querySnapshot = await getDocs(collection(db, "locations"));
+        querySnapshot.forEach((doc) => {
+            // doc.data() is never undefined for query doc snapshots
+            // if (currentUser !== null && doc.data().user === currentUser.email) {
+            //     lArray.push({lat: doc.data().lat, long: doc.data().long, user: 'You'});
+            // } else {
+            //     lArray.push(doc.data());
+            // }
+            lArray.push(doc.data());
+            console.log(doc.id, " => ", doc.data());
+        });        
+        setLocations(lArray);
+        //   console.log("HERE");
     }
 
+    // async function getPins() {
+    //     await loadData();
+    //     await getLocation();
+    // }
+    
     async function deleteData() {
       const querySnapshot = await getDocs(collection(db, "locations"));
-      
-      const deleteOps = [];
-      
+    
+      const deleteOps:any[] = [];
+    
       querySnapshot.forEach((doc) => {
         deleteOps.push(deleteDoc(doc.ref));      
       });
-
+    
       Promise.all(deleteOps).then(() => console.log('documents deleted'))
     }
-
-
-
-
-    // storeData(33.7747054, -84.3962344, 'camerongpotter@gmail.com')
-
-    loadData();
-
-    // deleteData();
     
-
-
+    
+    
+    // loadData();
+    // console.log(position[0] == 33.7747054 && position[1] === -84.3962344);
+    // storeData(position[0], position[1], 'camerongpotter@gmail.com');
+    // deleteData();
+    // getPins();
+    
+    
+    
     let mapHtml = `
     <html>
-          <head>
-            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-          </head>
-          <body>
-            <div id="map" style="height: 100%;" style="scale: 2"></div>
-            <script>
-              var map = L.map('map').setView([33.75, -84.39], 13);
-              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.o penstreetmap.org/">OpenStreetMap</a> contributors',
-                maxZoom: 19,
-              }).addTo(map);
-              
-              ${locations.map((marker) => `
-                        L.marker([${marker.lat}, ${marker.lng}])
-                          .bindPopup('${marker.name}')
-                          .addTo(map);
-                      `).join('')}
+    <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    </head>
+    <body>
+    <div id="map" style="height: 100%;" style="scale: 2"></div>
+    <script>
+    var map = L.map('map').setView([33.75, -84.39], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.o penstreetmap.org/">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+}).addTo(map);
 
-            </script>
-          </body>
-        </html>
-      `;
+${locations.map((marker) => `
+L.marker([${marker.lat}, ${marker.long}])
+.bindPopup('${marker.user}')
+.addTo(map);
+`).join('')}
 
-    return (
-        // <View style={styles.container}>
-        //     <LeafletView
-        //         style={{ flex: 1 }}
-        //         initialRegion={{
-        //             latitude: 37.78825,
-        //             longitude: -122.4324,
-        //             latitudeDelta: 0.0922,
-        //             longitudeDelta: 0.0421
-        //         }}
-        //     />
-        //  </View>
+</script>
+</body>
+</html>
+`;
 
-        <View style={styles.container}>
-
-              <WebView
-                style={styles.mapView}
-                source={{ html: mapHtml }}
-              />
-              <TextInput style={styles.inputContainer} placeholder="Find your friends" />
-              <View style={styles.button}>
-                <PurpleButton label="Share my location" onPress={() => alert("Button has been pressed")}/>
-              </View>
-        </View>
+return (
+    // <View style={styles.container}>
+    //     <LeafletView
+    //         style={{ flex: 1 }}
+    //         initialRegion={{
+    //             latitude: 37.78825,
+    //             longitude: -122.4324,
+    //             latitudeDelta: 0.0922,
+    //             longitudeDelta: 0.0421
+    //         }}
+    //     />
+    //  </View>
+    
+    <View style={styles.container}>
+    
+    <WebView
+    style={styles.mapView}
+    source={{ html: mapHtml }}
+    />
+    <TextInput style={styles.inputContainer} placeholder="Find your friends" />
+    <View style={styles.button}>
+    <PurpleButton label="Share my location" onPress={() => alert("Button has been pressed")}/>
+    </View>
+    </View>
     )
-
+    
 }
 
 export default () => {
     return (
         <NativeBaseProvider>
-
-            <Home />
-
+        
+        <Home />
+        
         </NativeBaseProvider>
-    )
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    HomeText: {
-        marginTop: 100,
-        fontSize: 30,
-        fontWeight: 'bold',
-    },
-    Middle: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    mapView: {
-      transform: [{scale: 2}]
-    },
-    inputContainer: {
-        position: 'absolute',
-        top: 50,
-        left: 10,
-        right: 10,
-        width: 365,
-        height: 50,
-        borderWidth: 1,
-        backgroundColor: 'white',
-        borderRadius: 50,
-        padding: 5,
-        paddingLeft: 15
-    },
-    button: {
-      position: 'absolute',
-      bottom: 100,
-      left: 10,
-      right: 10,
-      width: 365,
-      height: 50
+        )
     }
-});
+    
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: '#fff',
+        },
+        HomeText: {
+            marginTop: 100,
+            fontSize: 30,
+            fontWeight: 'bold',
+        },
+        Middle: {
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        mapView: {
+            transform: [{scale: 2}]
+        },
+        inputContainer: {
+            position: 'absolute',
+            top: 50,
+            left: 10,
+            right: 10,
+            width: 365,
+            height: 50,
+            borderWidth: 1,
+            backgroundColor: 'white',
+            borderRadius: 50,
+            padding: 5,
+            paddingLeft: 15
+        },
+        button: {
+            position: 'absolute',
+            bottom: 100,
+            left: 10,
+            right: 10,
+            width: 365,
+            height: 50
+        }
+    });
