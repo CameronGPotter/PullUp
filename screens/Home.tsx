@@ -265,5 +265,6 @@ export default () => {
       buttonLabel: {
         color: '#000000',
         fontSize: 16,
+        fontWeight: "bold"
       },
     });
