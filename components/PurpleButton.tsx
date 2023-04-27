@@ -1,13 +1,14 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 
-export default function PurpleButton({ label, onPress, buttonWidth, buttonMarginHorizontal, marginLeftAuto, buttonTextColor, buttonBackgroundColor }: any) {
+export default function PurpleButton({ label, onPress, buttonWidth, buttonMarginHorizontal, marginLeftAuto, marginRightAuto, buttonTextColor, buttonBackgroundColor }: any) {
   return (
     <View style={[
                     styles.buttonContainer,
                     {
                       width:            buttonWidth != null ? buttonWidth : 320,
                       marginHorizontal: buttonMarginHorizontal != null ? buttonMarginHorizontal : 20,
-                      marginLeft:       marginLeftAuto ? 'auto' : null
+                      marginLeft:       marginLeftAuto ? 'auto' : null,
+                      marginRight:      marginRightAuto ? 'auto' : null
                     }]}>
       <Pressable style={[styles.button,
                         {

@@ -25,13 +25,15 @@ function EventDetails() {
         <View>  
             <Text style={styles.HomeText}>Description</Text>
 
-            <Input
-                value={description}
-                onChangeText={(description) => setDescription(description)}
-                placeholder={'Describe your event to others'}
-            />
+            <View style={{marginLeft: 10, marginRight: 'auto', marginTop: 20, width: '95%', marginBottom: 20}}>
+                <Input
+                    value={description}
+                    onChangeText={(description) => setDescription(description)}
+                    placeholder={'Let others know why you want to hang'}
+                />
+            </View>
 
-            <PurpleButton label="Share" onPress={navigation.replace("Home")} />
+            <PurpleButton label="Share" onPress={() => navigation.replace("Home")} marginRightAuto={true} marginLeftAuto={true} />
         </View>
     )
 }
