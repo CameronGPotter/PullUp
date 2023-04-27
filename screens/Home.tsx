@@ -183,7 +183,7 @@ return (
     </View>
 
     <View style={styles.button}>
-    <PurpleButton label="Share my location" onPress={() => alert("Button has been pressed")}/>
+    <PurpleButton label="Share my location" onPress={() => navigation.navigate('ShareLocation')}/>
     </View>
     </View>
     )

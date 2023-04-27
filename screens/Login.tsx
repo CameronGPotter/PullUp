@@ -18,7 +18,7 @@ function Login() {
 
     function onLogin() {
         const user = signIn(userName, password)
-            .then(() => navigation.navigate("Home"))
+            .then(() => navigation.replace("Home"))
             .catch(() => alert("Login Not Found"));
     }
 
@@ -30,7 +30,7 @@ function Login() {
             <View style={styles.text2}>
                 <Text>Don't have an account? </Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")} ><Text style={styles.signupText}> Sign up</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate("Home")} ><Text style={styles.signupText}> Home Screen</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.replace("Home")} ><Text style={styles.signupText}> Home Screen</Text></TouchableOpacity>
             </View>
 
             {/* Username or Email Input Field */}

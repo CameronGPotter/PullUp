@@ -1,10 +1,21 @@
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 
-export default function PurpleButton({ label, onPress }: any) {
+export default function PurpleButton({ label, onPress, buttonWidth, buttonMarginHorizontal, marginLeftAuto, buttonTextColor, buttonBackgroundColor }: any) {
   return (
-    <View style={styles.buttonContainer}>
-      <Pressable style={styles.button} onPress={onPress}>
-        <Text style={styles.buttonLabel}>{label}</Text>
+    <View style={[
+                    styles.buttonContainer,
+                    {
+                      width:            buttonWidth != null ? buttonWidth : 320,
+                      marginHorizontal: buttonMarginHorizontal != null ? buttonMarginHorizontal : 20,
+                      marginLeft:       marginLeftAuto ? 'auto' : null
+                    }]}>
+      <Pressable style={[styles.button,
+                        {
+                          backgroundColor: buttonBackgroundColor != null ? buttonBackgroundColor : 'purple',
+                          borderWidth: buttonBackgroundColor != null ? 1 : null,
+                          borderColor: buttonBackgroundColor != null ? "purple" : null
+                        }]} onPress={onPress}>
+        <Text style={[styles.buttonLabel, {color: buttonTextColor != null ? buttonTextColor : 'white',}]}>{label}</Text>
       </Pressable>
     </View>
   );
@@ -13,8 +24,7 @@ export default function PurpleButton({ label, onPress }: any) {
 const styles = StyleSheet.create({
   buttonContainer: {
     width: 320,
-    height: 68,
-    marginHorizontal: 20,
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 3,
