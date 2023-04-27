@@ -6,6 +6,7 @@ import Home from './screens/Home';
 import Friends from './screens/Friends';
 import ShareLocation from './screens/ShareLocation';
 import ShareLocationBusy from './screens/ShareLocationBusy';
+import EventDetails from './screens/EventDetails';
 
 import { NavigationContainer } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -17,7 +18,8 @@ export type RootStackParamList = {
     Home: undefined,
     Friends: undefined,
     ShareLocation: undefined,
-    ShareLocationBusy: undefined;
+    ShareLocationBusy: undefined,
+    EventDetails: undefined;
     Profile: { userId: string };
     Feed: { sort: 'latest' | 'top' } | undefined;
 };
@@ -35,6 +37,7 @@ function App() {
             <Stack.Screen name="Friends" component={Friends} />
             <Stack.Screen name="ShareLocation" component={ShareLocation} />
             <Stack.Screen name="ShareLocationBusy" component={ShareLocationBusy} />
+            <Stack.Screen name="EventDetails" component={EventDetails} />
         </Stack.Navigator>
     );
 }
