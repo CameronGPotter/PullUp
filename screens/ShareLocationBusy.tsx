@@ -26,8 +26,8 @@ function ShareLocationBusy() {
             <Text style={styles.HomeText}>Share Location</Text>
 
             <View style={{flexDirection:'row', flexWrap:'nowrap', alignItems: 'center', justifyContent: 'center', marginTop: 20}}>
-                <PurpleButton label="Available" buttonWidth='48%' buttonMarginHorizontal={1} buttonBackgroundColor='white' buttonTextColor='purple' onPress={() => navigation.replace('ShareLocation')}/>
-                <PurpleButton label="Busy" buttonWidth='48%' buttonMarginHorizontal={1} />
+                <PurpleButton label="Available Friends" buttonWidth='48%' buttonMarginHorizontal={1} buttonBackgroundColor='white' buttonTextColor='purple' onPress={() => navigation.replace('ShareLocation')}/>
+                <PurpleButton label="Busy Friends" buttonWidth='48%' buttonMarginHorizontal={1} />
             </View>
             
             <FlatList

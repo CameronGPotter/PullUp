@@ -30,7 +30,6 @@ function Friends() {
                 style={styles.flatList}
                 data={[
                   {key: 'Devin', pic: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fcdn.chatsports.com%2Fthumbnails%2F1561-83718-original.jpeg&f=1&nofb=1&ipt=8a339e76949ef856d094636d737216a81838936a0b0f97d21dea7a856dce2d97&ipo=images"},
-                  {key: 'Dan', pic: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww4.pictures.zimbio.com%2Fgi%2FDan%2BWheldon%2BDies%2BLas%2BVegas%2BIndy%2BCrash%2BhKLkNJ9NXR5x.jpg&f=1&nofb=1&ipt=0222342c1fb7f81c380ab9826f2c37663bc80c18fd379b9d54f7697cd88b0c0c&ipo=images"},
                   {key: 'Dominic', pic: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmedia1.popsugar-assets.com%2Ffiles%2Fthumbor%2FLpLmieDTAxgG2M3xCYobmoCvUQc%2Ffit-in%2F1024x1024%2Ffilters%3Aformat_auto-!!-%3Astrip_icc-!!-%2F2019%2F04%2F12%2F804%2Fn%2F1922283%2Fcfbfb77aa5344fe8_GettyImages-961485694%2Fi%2FDominic-Monaghan.jpg&f=1&nofb=1&ipt=2f92a05ecd77b3cc3dbf0c87acafdedac37e30bcfa9288a903dfda2a72674908&ipo=images"},
                   {key: 'Jackson', pic: "https://s3-us-west-2.amazonaws.com/uw-s3-cdn/wp-content/uploads/sites/39/2014/11/05185626/Jesse-Jackson-Brown-Background-1140x1517.jpg"},
                   {key: 'James', pic: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstaticg.sportskeeda.com%2Fwp-content%2Fuploads%2F2014%2F06%2Fjames-rodriugez-1404113987.jpg&f=1&nofb=1&ipt=918673eda24a94a585e192c93e06d52cc3843469fe19b420e14cf171a07171b4&ipo=images"},

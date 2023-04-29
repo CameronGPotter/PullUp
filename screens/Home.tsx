@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Pressable, Platform } from 'react-native';
 import { Input, NativeBaseProvider, Button, Icon, Box, Image, AspectRatio } from 'native-base';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -22,9 +22,9 @@ let position = [33.7747054, -84.3962344];
 function Home() {
     const { currentUser } = auth; //we are getting the user from Firebase
     const markers = [
-        { lat: 33.7729036, long: -84.3963336, user: 'Chris' },
-        // { lat: 33.7747054, long: -84.3962344, user: 'Cameron' },;
-        { lat: 33.7754311, long: -84.4034438, user: 'Chenyu' },
+        { lat: 33.772, long: -84.396, user: '<b>Chris</b><br>Working on spaceships.' },
+        { lat: 33.779, long: -84.393, user: '<b>Cameron</b><br>Playing baseball! ⚾' },
+        { lat: 33.7755, long: -84.4032, user: '<b>Chenyu</b><br>Gettin gainzzz 💪'},
     ];
     const navigation = useNavigation<loginScreenProp>();
     const [errorMessages, setErrorMessages] = useState<string | null>(null)
@@ -131,44 +131,67 @@ function Home() {
     
     
     let mapHtml = `
-    <html>
-    <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    </head>
-    <body>
-    <div id="map" style="height: 100%;" style="scale: 2"></div>
-    <script>
-    var map = L.map('map').setView([33.75, -84.39], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.o penstreetmap.org/">OpenStreetMap</a> contributors',
-    maxZoom: 19,
-}).addTo(map);
+        <html>
+        <head>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <style>
+          .leaflet-popup-content {
+            font-size: 30px;
+          }
+        </style>
+        </head>
+        <body>
+        <div id="map" style="height: 100%;" style="scale: 2"></div>
+        <script>
+        var map = L.map('map', {zoomSnap: 0}).setView([33.775, -84.40], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+        maxZoom: 20
+    }).addTo(map);
 
-${locations.map((marker) => `
-L.marker([${marker.lat}, ${marker.long}])
-.bindPopup('${marker.user}')
-.addTo(map);
-`).join('')}
+    ${locations.map((marker) => `
+    var marker = L.marker([${marker.lat}, ${marker.long}])
+    .bindPopup('${marker.user}')
+    .addTo(map);
+    marker._icon.style.filter = "hue-rotate(120deg)"
+    `).join('')}
 
-</script>
-</body>
-</html>
-`;
+    ${markers.map((marker) => `
+    var marker = L.marker([${marker.lat}, ${marker.long}])
+    .bindPopup('${marker.user}')
+    .addTo(map);
+    `).join('')}
+
+    </script>
+    </body>
+    </html>
+    `;
+
+if (Platform.OS === "web") {
+
+  return (
+        
+    <View style={styles.container}>
+    
+    <iframe src="https://www.espn.com/" height={'100%'} width={'100%'} />
+
+    <View style={whiteButtonStyle.buttonContainer}>
+      <Pressable style={whiteButtonStyle.button} onPress={()=>navigation.navigate('Friends')} placeholder="Find your friends">
+        <Text style={whiteButtonStyle.buttonLabel}>See Friends</Text>
+      </Pressable>
+    </View>
+
+    <View style={styles.button}>
+    <PurpleButton label="Share My Location" onPress={() => navigation.navigate('ShareLocation')}/>
+    </View>
+    </View>
+    )
+
+} 
 
 return (
-    // <View style={styles.container}>
-    //     <LeafletView
-    //         style={{ flex: 1 }}
-    //         initialRegion={{
-    //             latitude: 37.78825,
-    //             longitude: -122.4324,
-    //             latitudeDelta: 0.0922,
-    //             longitudeDelta: 0.0421
-    //         }}
-    //     />
-    //  </View>
-    
+        
     <View style={styles.container}>
     
     <WebView
@@ -183,7 +206,7 @@ return (
     </View>
 
     <View style={styles.button}>
-    <PurpleButton label="Share my location" onPress={() => navigation.navigate('ShareLocation')}/>
+    <PurpleButton label="Share My Location" onPress={() => navigation.navigate('ShareLocation')}/>
     </View>
     </View>
     )
