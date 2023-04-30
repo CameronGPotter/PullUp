@@ -22,9 +22,9 @@ let position = [33.7747054, -84.3962344];
 function Home() {
     const { currentUser } = auth; //we are getting the user from Firebase
     const markers = [
-        { lat: 33.772, long: -84.396, user: '<b>Chris</b><br>Working on spaceships.' },
-        { lat: 33.779, long: -84.393, user: '<b>Cameron</b><br>Playing baseball! ⚾' },
-        { lat: 33.7755, long: -84.4032, user: '<b>Chenyu</b><br>Gettin gainzzz 💪'},
+        { lat: 33.772, long: -84.396, user: '<b>Chris</b><br>Working on spaceships.', pic: 'https://media.licdn.com/dms/image/C4D03AQExwpzhlCbJYA/profile-displayphoto-shrink_400_400/0/1575300073772?e=1688601600&v=beta&t=4Az1EBrJmmeZz204kYg8L67o2atcYKMeLdBz2WFQCWM'},
+        { lat: 33.779, long: -84.393, user: '<b>Cameron</b><br>Playing baseball! ⚾', pic: 'https://media.licdn.com/dms/image/C4E03AQHqRKD011Awbw/profile-displayphoto-shrink_800_800/0/1627954381811?e=2147483647&v=beta&t=XNnGXAounLCfrVrD9mLJ0s0jtc6lFMZgnE-DkiQz9fw' },
+        { lat: 33.7755, long: -84.4032, user: '<b>Chenyu</b><br>Gettin gainzzz 💪', pic: 'https://media.licdn.com/dms/image/C4D03AQEvjzP_RTPLDg/profile-displayphoto-shrink_800_800/0/1590116917483?e=2147483647&v=beta&t=W_ugRAzK3Yg94WoHADhFVixeJNIAjOpMHcyyDXARbvY'},
     ];
     const navigation = useNavigation<loginScreenProp>();
     const [errorMessages, setErrorMessages] = useState<string | null>(null)
@@ -129,7 +129,6 @@ function Home() {
     // getPins();
     
     
-    
     let mapHtml = `
         <html>
         <head>
@@ -137,7 +136,11 @@ function Home() {
         <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
         <style>
           .leaflet-popup-content {
-            font-size: 30px;
+            font-size: 25px;
+          }
+
+          .leaflet-marker-icon {
+            border-radius: 50%;
           }
         </style>
         </head>
@@ -150,6 +153,14 @@ function Home() {
         maxZoom: 20
     }).addTo(map);
 
+    var LeafIcon = L.Icon.extend({
+      options: {
+          iconSize:     [60, 60],
+          iconAnchor:   [22, 94],
+          popupAnchor:  [-3, -76]
+      }
+    });
+
     ${locations.map((marker) => `
     var marker = L.marker([${marker.lat}, ${marker.long}])
     .bindPopup('${marker.user}')
@@ -158,10 +169,26 @@ function Home() {
     `).join('')}
 
     ${markers.map((marker) => `
-    var marker = L.marker([${marker.lat}, ${marker.long}])
+    var icon = new LeafIcon({iconUrl: '${marker.pic}'})
+    var marker = L.marker([${marker.lat}, ${marker.long}], {icon: icon})
     .bindPopup('${marker.user}')
     .addTo(map);
     `).join('')}
+
+    map.on('zoomstart', function () {
+      var zoomLevel = map.getZoom();
+      if (zoomLevel > 17) {
+        for (var iconThing of document.getElementsByClassName('leaflet-marker-icon')) {
+          iconThing.style.width = 100;
+          iconThing.style.height = 100;
+        }
+      } else {
+        for (var iconThing of document.getElementsByClassName('leaflet-marker-icon')) {
+          iconThing.style.width = 60;
+          iconThing.style.height = 60;
+        }
+      }
+    });
 
     </script>
     </body>
