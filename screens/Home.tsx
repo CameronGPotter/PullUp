@@ -286,7 +286,7 @@ if (Platform.OS === "web") {
         
     <View style={styles.container}>
     
-    <iframe src={'file:///index.html'} height={'100%'} width={'100%'}></iframe>
+    <iframe src={'https://christophrrb.github.io/maphtml.html'} height={'100%'} width={'100%'}></iframe>
 
     <View style={whiteButtonStyle.buttonContainer}>
       <Pressable style={whiteButtonStyle.button} onPress={()=>navigation.navigate('Friends')} placeholder="Find your friends">
