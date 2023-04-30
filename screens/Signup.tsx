@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Input, NativeBaseProvider, Button, Icon, Box, Image, AspectRatio } from 'native-base';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -7,13 +7,25 @@ import { useNavigation } from '@react-navigation/native';
 import { alignContent, flex, flexDirection, width } from 'styled-system';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../App';
+import { app } from "../firebaseConfig"
+import { auth } from "../firebaseConfig";
+import { createUser } from '../auth/auth_signup_password';
 
 type signupScreenProp = StackNavigationProp<RootStackParamList, 'Signup'>;
 
 
-
 function Signup() {
+    const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const navigation = useNavigation<signupScreenProp>();
+
+    function onSignUp() {
+        const user = createUser(email, password);
+        // console.log(user);
+        navigation.navigate("Home");
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.Middle}>
@@ -24,11 +36,14 @@ function Signup() {
                 <TouchableOpacity onPress={() => navigation.navigate("Login")} ><Text style={styles.signupText}> Login </Text></TouchableOpacity>
             </View>
 
-            {/* Username or Email Input Field */}
+            {/* Username Input Field */}
             <View style={styles.buttonStyle}>
 
                 <View style={styles.emailInput}>
                     <Input
+                        value={userName}
+                        onChangeText={(userName) => setUserName(userName)}
+                        placeholder={'Username'}
                         InputLeftElement={
                             <Icon
                                 as={<FontAwesome5 name="user-secret" />}
@@ -43,7 +58,6 @@ function Signup() {
                             />
                         }
                         variant="outline"
-                        placeholder="Username"
                         _light={{
                             placeholderTextColor: "blueGray.400",
                         }}
@@ -60,6 +74,9 @@ function Signup() {
 
                 <View style={styles.emailInput}>
                     <Input
+                        value={email}
+                        onChangeText={(email) => setEmail(email)}
+                        placeholder={'Email'}
                         InputLeftElement={
                             <Icon
                                 as={<MaterialCommunityIcons name="email" />}
@@ -74,7 +91,6 @@ function Signup() {
                             />
                         }
                         variant="outline"
-                        placeholder="Email"
                         _light={{
                             placeholderTextColor: "blueGray.400",
                         }}
@@ -91,6 +107,9 @@ function Signup() {
 
                 <View style={styles.emailInput}>
                     <Input
+                        value={password}
+                        onChangeText={(password) => setPassword(password)}
+                        placeholder={'Password'}
                         InputLeftElement={
                             <Icon
                                 as={<FontAwesome5 name="key" />}
@@ -106,7 +125,6 @@ function Signup() {
                         }
                         variant="outline"
                         secureTextEntry={true}
-                        placeholder="Password"
                         _light={{
                             placeholderTextColor: "blueGray.400",
                         }}
@@ -150,7 +168,7 @@ function Signup() {
 
             {/* Button */}
             <View style={styles.buttonStyle}>
-                <Button style={styles.buttonDesign}>
+                <Button style={styles.buttonDesign} onPress={() => onSignUp()}>
                     REGISTER NOW
                 </Button>
             </View>
