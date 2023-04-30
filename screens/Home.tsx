@@ -302,6 +302,28 @@ if (Platform.OS === "web") {
 
 } 
 
+let initialState = {
+    backgroundColor: 'green',
+    text: "Available  ⬤"
+}
+
+const [state, setState] = useState(initialState);
+
+
+availabilityChange = () => {
+  if (state.backgroundColor == "green") {
+    setState({
+      backgroundColor: 'red',
+      text: 'Busy  ⬤'
+    })
+  } else {
+    setState({
+      backgroundColor: 'green',
+      text: 'Available  ⬤'
+    })
+  }
+}
+
 return (
         
     <View style={styles.container}>
@@ -316,9 +338,15 @@ return (
         <Text style={whiteButtonStyle.buttonLabel}>See Friends</Text>
       </Pressable>
     </View>
+      
+    <View style={styles.availabilityButton}>
+      <Pressable onPress={this.availabilityChange}>
+          <Text style={{backgroundColor: state.backgroundColor, color: 'white', borderRadius: 50, textAlign: 'center', padding: 10}}>{state.text}</Text>
+      </Pressable>
+    </View>
 
     <View style={styles.button}>
-    <PurpleButton label="Share My Location" onPress={() => navigation.navigate('ShareLocation')}/>
+      <PurpleButton label="Share My Location" onPress={() => navigation.navigate('ShareLocation')}/>
     </View>
     </View>
     )
@@ -372,6 +400,15 @@ export default () => {
             right: 10,
             width: 365,
             height: 50
+        },
+        availabilityButton: {
+            position: 'absolute',
+            top: 20,
+            left: 20,
+            width: '30%',
+            height: 100,
+            borderRadius: 50,
+            textAlign: 'center'
         }
     });
 

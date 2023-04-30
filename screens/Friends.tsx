@@ -51,6 +51,7 @@ function Friends() {
                                 alt="Profile Picture"
                             />
                             <Text style={styles.item}>{item.key}</Text>
+                            <PurpleButton label="Remove" onPress={()=> alert("Friend Removed")} buttonWidth="30%" marginLeftAuto={true} buttonTextColor='purple' buttonBackgroundColor='white' />
                         </View>
                 }
             />
