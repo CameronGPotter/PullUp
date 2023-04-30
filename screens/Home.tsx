@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Pressable, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Pressable, Platform, LogBox } from 'react-native';
 import { Input, NativeBaseProvider, Button, Icon, Box, Image, AspectRatio } from 'native-base';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -32,6 +32,8 @@ Notifications.setNotificationHandler({
 let notify = true;
 
 function Home() {
+    LogBox.ignoreAllLogs();
+
     const { currentUser } = auth; //we are getting the user from Firebase
     const markers = [
         { lat: 33.772, long: -84.396, user: '<b>Chris</b><br>Working on spaceships.', pic: 'https://media.licdn.com/dms/image/C4D03AQExwpzhlCbJYA/profile-displayphoto-shrink_400_400/0/1575300073772?e=1688601600&v=beta&t=4Az1EBrJmmeZz204kYg8L67o2atcYKMeLdBz2WFQCWM'},
