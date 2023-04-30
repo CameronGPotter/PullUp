@@ -34,7 +34,9 @@
     "styled-components": "^5.3.6",
     "styled-system": "^5.1.5",
     "react-native-web": "~0.18.10",
-    "@expo/webpack-config": "^18.0.1"
+    "@expo/webpack-config": "^18.0.1",
+    "expo-notifications": "~0.18.1",
+    "expo-device": "~5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

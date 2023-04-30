@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Pressable, Platform } from 'react-native';
 import { Input, NativeBaseProvider, Button, Icon, Box, Image, AspectRatio } from 'native-base';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -10,6 +10,8 @@ import { RootStackParamList } from '../App';
 import * as Location from 'expo-location'
 import { collection, addDoc, getDocs, deleteDoc } from "firebase/firestore"; 
 import { app, auth, db } from '../firebaseConfig'
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 import { WebView } from 'react-native-webview';
 
@@ -19,6 +21,16 @@ type loginScreenProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 let position = [33.7747054, -84.3962344];
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+let notify = true;
+
 function Home() {
     const { currentUser } = auth; //we are getting the user from Firebase
     const markers = [
@@ -26,6 +38,79 @@ function Home() {
         { lat: 33.779, long: -84.393, user: '<b>Cameron</b><br>Playing baseball! ⚾', pic: 'https://media.licdn.com/dms/image/C4E03AQHqRKD011Awbw/profile-displayphoto-shrink_800_800/0/1627954381811?e=2147483647&v=beta&t=XNnGXAounLCfrVrD9mLJ0s0jtc6lFMZgnE-DkiQz9fw' },
         { lat: 33.7755, long: -84.4032, user: '<b>Chenyu</b><br>Gettin gainzzz 💪', pic: 'https://media.licdn.com/dms/image/C4D03AQEvjzP_RTPLDg/profile-displayphoto-shrink_800_800/0/1590116917483?e=2147483647&v=beta&t=W_ugRAzK3Yg94WoHADhFVixeJNIAjOpMHcyyDXARbvY'},
     ];
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [notification, setNotification] = useState(false);
+    const notificationListener = useRef();
+    const responseListener = useRef();
+
+    useEffect(() => {
+      registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+      notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        setNotification(notification);
+      });
+
+      responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        console.log(response);
+      });
+
+      return () => {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+        Notifications.removeNotificationSubscription(responseListener.current);
+      };
+    }, []);
+
+    if (notify) {
+      (async () => {
+        await schedulePushNotification();
+      })()
+      notify = false;
+    }
+
+    async function schedulePushNotification() {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Chenyu wants to hang out! 📬",
+          body: 'Open the app to see location',
+          data: { data: 'goes here' },
+        },
+        trigger: { seconds: 2 },
+      });
+    }
+
+    async function registerForPushNotificationsAsync() {
+      let token;
+
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: '#FF231F7C',
+        });
+      }
+
+      if (Device.isDevice) {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+          alert('Failed to get push token for push notification!');
+          return;
+        }
+        token = (await Notifications.getExpoPushTokenAsync()).data;
+        console.log(token);
+      } else {
+        alert('Must use physical device for Push Notifications');
+      }
+
+      return token;
+    }
+
     const navigation = useNavigation<loginScreenProp>();
     const [errorMessages, setErrorMessages] = useState<string | null>(null)
     const [locations, setLocations] = useState<any[]>([]);
