@@ -260,7 +260,7 @@ function Home() {
     .addTo(map);
     `).join('')}
 
-    map.on('zoomstart', function () {
+    map.on('zoomend', function () {
       var zoomLevel = map.getZoom();
       if (zoomLevel > 17) {
         for (var iconThing of document.getElementsByClassName('leaflet-marker-icon')) {
@@ -286,7 +286,7 @@ if (Platform.OS === "web") {
         
     <View style={styles.container}>
     
-    <iframe src="https://www.espn.com/" height={'100%'} width={'100%'} />
+    <iframe src={'file:///index.html'} height={'100%'} width={'100%'}></iframe>
 
     <View style={whiteButtonStyle.buttonContainer}>
       <Pressable style={whiteButtonStyle.button} onPress={()=>navigation.navigate('Friends')} placeholder="Find your friends">
